@@ -55,13 +55,9 @@ src/
 
 ---
 
-## 🌐 Deploying to Netlify
+## 🌐 Deploying to Vercel
 
-1. Push this folder to your GitHub repo
-2. In Netlify: **New site → Import from GitHub → pick repo**
-3. Build command: `npm run build`
-4. Publish directory: `dist`
-5. The `netlify.toml` file handles SPA routing automatically
+
 
 ---
 
