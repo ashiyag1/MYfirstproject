@@ -1,48 +1,59 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import clsx from 'clsx'
 
-const accents = {
-  water:  'from-ocean to-ocean-lt',
-  habits: 'from-sage to-sage-lt',
-  streak: 'from-gold to-gold-lt',
-  mood:   'from-purple-400 to-pink-300',
+const palette = {
+  water:  { bar: 'linear-gradient(90deg, var(--royal), var(--royal-lt))',  top: 'linear-gradient(90deg, var(--royal), var(--royal-lt))' },
+  habits: { bar: 'linear-gradient(90deg, var(--emerald), var(--emerald-lt))', top: 'linear-gradient(90deg, var(--emerald), var(--emerald-lt))' },
+  streak: { bar: 'linear-gradient(90deg, var(--saffron), var(--gold))',    top: 'linear-gradient(90deg, var(--saffron), var(--gold))' },
+  mood:   { bar: 'linear-gradient(90deg, #B08BBF, #D4AADF)',               top: 'linear-gradient(90deg, #B08BBF, #D4AADF)' },
 }
 
 export default function StatCard({ type = 'water', emoji, value, unit, label, sub, to, pct, delay = 0 }) {
+  const pal = palette[type] || palette.water
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="card-hover relative overflow-hidden p-6"
+      className="card card-hover relative overflow-hidden p-6"
     >
       {/* Top accent bar */}
-      <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${accents[type] || accents.water}`} />
+      <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: pal.top }} />
 
       {to && (
-        <Link to={to} className="absolute top-4 right-4 text-[11px] font-bold text-ocean-lt/70 hover:text-ocean-lt transition-colors">
+        <Link to={to} style={{
+          position: 'absolute', top: '14px', right: '16px',
+          fontSize: '11px', fontWeight: 700,
+          color: 'var(--saffron)', textDecoration: 'none',
+          fontFamily: 'Lexend', opacity: 0.8,
+        }}>
           View →
         </Link>
       )}
 
-      <span className="text-3xl mb-3 block">{emoji}</span>
+      <span style={{ fontSize: '28px', marginBottom: '10px', display: 'block' }}>{emoji}</span>
 
-      <div className="font-display text-4xl font-medium text-ink dark:text-sand-lt leading-none">
+      <div style={{
+        fontFamily: 'Playfair Display, serif',
+        fontSize: '40px',
+        fontWeight: 400,
+        lineHeight: 1,
+        color: 'var(--ink)',
+      }}>
         {value}
-        <span className="text-base font-light text-mist-dark dark:text-ocean-lt ml-1">{unit}</span>
+        <span style={{ fontSize: '14px', fontWeight: 300, color: 'var(--text-muted)', marginLeft: '4px', fontFamily: 'Lexend' }}>{unit}</span>
       </div>
 
-      <div className="text-sm text-mist-dark dark:text-ocean-lt/80 mt-1 font-medium">{label}</div>
-      {sub && <div className="text-[11px] text-mist-dark/70 dark:text-ocean-lt/50 mt-0.5">{sub}</div>}
+      <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px', fontWeight: 500, fontFamily: 'Lexend' }}>{label}</div>
+      {sub && <div style={{ fontSize: '11px', color: 'var(--text-faint)', marginTop: '2px', fontFamily: 'Lexend' }}>{sub}</div>}
 
       {pct !== undefined && (
-        <div className="mt-3 h-1.5 rounded-full bg-ocean-pale dark:bg-ocean/10 overflow-hidden">
+        <div style={{ marginTop: '12px', height: '5px', borderRadius: '99px', background: 'var(--ivory-darker)', overflow: 'hidden' }}>
           <motion.div
-            className={`h-full rounded-full bg-gradient-to-r ${accents[type] || accents.water}`}
+            style={{ height: '100%', borderRadius: '99px', background: pal.bar }}
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.8, delay: delay + 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.9, delay: delay + 0.2, ease: 'easeOut' }}
           />
         </div>
       )}

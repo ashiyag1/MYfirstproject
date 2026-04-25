@@ -1,77 +1,170 @@
 import { useState, useEffect } from 'react'
-import { RefreshCw } from 'lucide-react'
-import { fetchAIQuote, Store, today } from '../utils'
 import { motion, AnimatePresence } from 'framer-motion'
+import { RefreshCw } from 'lucide-react'
+import { fetchAIQuote, getDailyQuote, Store, today } from '../utils'
 
-const categoryColors = {
-  health: 'text-sage',
-  habits: 'text-gold-lt',
-  mindfulness: 'text-ocean-lt',
-  motivation: 'text-pink-300',
+const ERA_COLORS = {
+  'dharma':      '#D4A84B',
+  'yoga':        '#6B9E78',
+  'wisdom':      '#7B8DC8',
+  'health':      '#5DCAA5',
+  'ayurveda':    '#8FB86A',
+  'mindfulness': '#A08BBF',
+  'habits':      '#E87722',
+  'cosmos':      '#4BBFD4',
+  'compassion':  '#E88080',
+  'motivation':  '#E87722',
 }
 
-export default function QuoteBanner({ showRefresh = true }) {
-  const [quote, setQuote] = useState(null)
-  const [loading, setLoading] = useState(true)
+export default function QuoteBanner({ className = '' }) {
+  const [quote,    setQuote]    = useState(null)
+  const [loading,  setLoading]  = useState(true)
   const [spinning, setSpinning] = useState(false)
 
   const load = async (force = false) => {
     setLoading(true)
-    const q = await fetchAIQuote(force)
-    setQuote(q)
-    setLoading(false)
+    try {
+      const q = await fetchAIQuote(force)
+      setQuote(q)
+    } catch {
+      setQuote(getDailyQuote())
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
 
   const handleRefresh = async () => {
     setSpinning(true)
+    // Clear today's cached quote so we get a new one
     Store.del('quote_' + today())
     await load(true)
     setSpinning(false)
   }
 
+  const accentColor = quote ? (ERA_COLORS[quote.category] || '#D4A84B') : '#D4A84B'
+
   return (
-    <div className="relative rounded-3xl overflow-hidden p-8 md:p-10"
-      style={{ background: 'linear-gradient(135deg, #0D1F2D 0%, #1E3A4F 55%, #0e3d55 100%)' }}>
+    <div
+      className={`relative rounded-3xl overflow-hidden p-6 sm:p-8 border border-[#d8bb86]/40
+                  transition-transform duration-300 hover:scale-[1.006] ${className}`}
+      style={{
+        background:
+          'radial-gradient(circle at 18% 10%, rgba(244,186,83,0.20), transparent 42%), linear-gradient(145deg, #fdf5e8 0%, #f7ebd8 55%, #f2dfc3 100%)',
+      }}
+    >
+      {/* Manuscript textures */}
+      <div className="pointer-events-none absolute inset-0 opacity-50" style={{
+        backgroundImage:
+          'repeating-linear-gradient(0deg, rgba(114,76,35,0.05), rgba(114,76,35,0.05) 1px, transparent 1px, transparent 28px)',
+      }} />
+      <motion.div
+        aria-hidden
+        animate={{ opacity: [0.32, 0.5, 0.32] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className="pointer-events-none absolute -top-20 -right-16 w-64 h-64 rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(201,147,58,0.25), transparent 65%)' }}
+      />
 
-      {/* Decorative big quote mark */}
-      <span className="absolute top-0 left-4 font-display text-[140px] leading-none text-white/[0.04] pointer-events-none select-none">
-        "
-      </span>
-      {/* Glow orb */}
-      <div className="absolute -bottom-12 -right-12 w-44 h-44 rounded-full bg-ocean/15 blur-2xl pointer-events-none" />
+      {/* Ornamental watermark */}
+      <div
+        className="absolute top-2 right-5 text-[7.5rem] leading-none pointer-events-none select-none"
+        style={{ color: 'rgba(131,89,43,0.08)', fontFamily: 'serif', userSelect: 'none' }}
+        aria-hidden
+      >
+        ॐ
+      </div>
 
-      {showRefresh && (
-        <button
-          onClick={handleRefresh}
-          disabled={spinning}
-          className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-all duration-200 border border-white/10"
-          aria-label="New quote"
-        >
-          <RefreshCw size={14} className={spinning ? 'animate-spin' : ''} />
-        </button>
-      )}
+      {/* Side accent */}
+      <div
+        className="absolute left-0 top-6 bottom-6 w-1.5 rounded-r-full"
+        style={{ background: `linear-gradient(to bottom, ${accentColor}, #8a5a2b)` }}
+      />
+
+      {/* Refresh button */}
+      <button
+        onClick={handleRefresh}
+        disabled={loading || spinning}
+        className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center
+                   rounded-full border border-[#c7a46a]/55 transition-all duration-300
+                   hover:scale-110 hover:bg-[#f1dfc2] disabled:opacity-40"
+        style={{ background: 'rgba(251,238,212,0.72)', color: '#7b5123' }}
+        aria-label="Refresh quote"
+        title="Get a new quote"
+      >
+        <RefreshCw size={14} className={spinning || loading ? 'animate-spin' : ''} />
+      </button>
 
       <AnimatePresence mode="wait">
         {loading ? (
-          <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="font-display text-xl text-white/30 italic">
-            Finding today's wisdom…
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="pl-4 py-2 relative z-10"
+          >
+            <div className="h-4 w-32 rounded-full mb-3 animate-pulse" style={{ background: 'rgba(132,94,53,0.16)' }} />
+            <div className="h-6 w-full rounded-full mb-2 animate-pulse" style={{ background: 'rgba(132,94,53,0.13)' }} />
+            <div className="h-6 w-3/4 rounded-full animate-pulse" style={{ background: 'rgba(132,94,53,0.10)' }} />
           </motion.div>
         ) : quote ? (
-          <motion.div key={quote.text} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-            <p className="font-display text-xl md:text-2xl lg:text-3xl font-light italic text-white/90 leading-relaxed mb-4 relative z-10">
-              {quote.text}
-            </p>
-            <p className="text-xs font-bold uppercase tracking-widest text-ocean-lt relative z-10">
-              — {quote.author}
-            </p>
+          <motion.div
+            key={quote.text?.slice(0, 20)}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="pl-5 relative z-10"
+          >
+            {/* Category tag */}
             {quote.category && (
-              <span className={`inline-block mt-3 text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-white/8 border border-white/10 ${categoryColors[quote.category] || 'text-white/50'} relative z-10`}>
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold mb-4 uppercase tracking-wider"
+                style={{ background: `${accentColor}20`, color: '#7a4e20', border: `1px solid ${accentColor}55` }}
+              >
                 ✦ {quote.category}
-              </span>
+              </div>
             )}
+
+            {/* Devanagari original */}
+            {quote.text && /[\u0900-\u097F]/.test(quote.text) && (
+              <p
+                className="text-base sm:text-lg mb-2 leading-relaxed"
+                style={{ color: 'rgba(86,55,22,0.7)', fontFamily: '"Noto Serif Devanagari", serif' }}
+              >
+                {quote.text}
+              </p>
+            )}
+
+            {/* Main quote text */}
+            <blockquote
+              className="font-display mb-4 leading-relaxed"
+              style={{
+                fontSize: 'clamp(17px, 3vw, 23px)',
+                fontStyle: 'italic',
+                color: '#3f2914',
+              }}
+            >
+              "{quote.translation || quote.text}"
+            </blockquote>
+
+            {/* Author + source */}
+            <div>
+              <div
+                className="text-sm font-bold tracking-widest uppercase"
+                style={{ color: '#8a5a2b' }}
+              >
+                — {quote.author}
+              </div>
+              {quote.source && quote.source !== quote.author && (
+                <div
+                  className="text-xs mt-1"
+                  style={{ color: 'rgba(86,55,22,0.58)' }}
+                >
+                  {quote.source}
+                </div>
+              )}
+            </div>
           </motion.div>
         ) : null}
       </AnimatePresence>
