@@ -8,7 +8,7 @@ import QuoteBanner from '../components/QuoteBanner'
 import PageLayout, { Container } from '../components/PageLayout'
 import { useState, useEffect } from 'react'
 import background from '../assets/backdrophome.png'
-import MughalQuoteCard from '../components/MughalQuoteCard'
+import MandalaQuoteCard from '../components/MandalaQuoteCard'
 import chaiImage from '../assets/chai.jpg'
 import sitarImage from '../assets/sitar.jpg'
 import downloadImage from '../assets/download (1).jpg'
@@ -339,8 +339,8 @@ export default function Home() {
 
             {/* Right: Mughal card */}
             <motion.div initial={{ opacity:0, y:28 }} animate={{ opacity:1, y:0 }} transition={{ duration:1, delay:0.5 }}
-              style={{ flex:'0 0 auto', display:'flex', justifyContent:'center' }}>
-              <MughalQuoteCard />
+              style={{ flex:'0 0 auto', display:'flex', justifyContent:'center', marginLeft:'4.6rem' }}>
+              <MandalaQuoteCard />
             </motion.div>
 
           </div>
