@@ -4,7 +4,7 @@ A calm, premium wellness app for hydration tracking, habit building, journaling,
 
 **Brand:** FlowState / Hydrate With Ashiya  
 **Stack:** React 18 · React Router v6 · Framer Motion · Tailwind CSS · Vite  
-**Deploy:** Netlify (SPA routing configured)
+**Deploy:** Vercel 
 
 ---
 
