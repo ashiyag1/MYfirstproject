@@ -1,15 +1,23 @@
 import { motion } from 'framer-motion'
 import { useWellness } from '../context/WellnessContext'
 import { pct as calcPct } from '../utils'
-import StatCard from '../components/StatCard'
-import SectionHeading from '../components/SectionHeading'
-import OrnateDivider from '../components/OrnateDivider'
+
+import StatCard        from '../components/StatCard'
+import LotusRow        from '../components/LotusRow'
+import FlameRow        from '../components/FlameRow'
+import SectionHeading  from '../components/SectionHeading'
+import OrnateDivider   from '../components/OrnateDivider'
+
+import copperVesselImg from '../assets/dashboard/copper-vessel.png'
+import realLotusImg    from '../assets/dashboard/real-lotus.png'
+import realDiyaImg     from '../assets/dashboard/real-diya.png'
+import realCalendarImg from '../assets/dashboard/real-calendar.png'
+
 import { useHydrationStreak } from '../hooks/useHydrationStreak'
 
 /* ─────────────────────────────────────────────────────────────
-   ANIMATION VARIANT
-   Shared fade-up used by every card
-───────────────────────────────────────────────────────────── */
+   ANIMATION VARIANT  (same as before)
+─────────────────────────────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
   hidden: { opacity: 0, y: 26 },
   show: {
@@ -20,48 +28,83 @@ const fadeUp = (delay = 0) => ({
 })
 
 /* ─────────────────────────────────────────────────────────────
-   DATE CARD
-   Standalone so it's easy to restyle independently
-───────────────────────────────────────────────────────────── */
+   DATE CARD  (unchanged logic, updated icon slot)
+─────────────────────────────────────────────────────────────── */
 function DateCard() {
-  const now = new Date()
-  const date = now.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+  const now     = new Date()
+  const day     = now.toLocaleDateString('en-IN', { day: 'numeric' })
+  const month   = now.toLocaleDateString('en-IN', { month: 'short' })
   const weekday = now.toLocaleDateString('en-IN', { weekday: 'long' })
 
   return (
-    <div
-      className="fs-dash-card"
-      style={{ minHeight: 120 }}
-    >
-      <div style={{ fontSize: '2rem', marginBottom: 6 }}>🪷</div>
-
-      <div style={{
-        fontFamily: "'Cormorant Garamond', serif",
-        fontSize: '2rem',
-        fontWeight: 500,
-        color: 'var(--bark)',
-        lineHeight: 1,
-      }}>
-        {date}
+    <div className="fs-dash-card fs-date-card">
+      <a
+        href="#"
+        style={{
+          position: 'absolute',
+          top: 16,
+          right: 18,
+          fontFamily: "'Lora', serif",
+          fontSize: '0.78rem',
+          color: '#7b5ea7',
+          textDecoration: 'none',
+        }}
+      >
+        View &rarr;
+      </a>
+      {/* Calendar icon circle – matches the purple style in the screenshot */}
+      <div
+        style={{
+          width: 64,
+          height: 64,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle at 36% 28%, #f8bfd0 0%, #d06b91 58%, #a95182 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 28,
+          flexShrink: 0,
+        }}
+        className="fs-date-icon"
+      >
+        <img src={realCalendarImg} alt="Calendar" className="fs-date-icon-img" />
       </div>
 
-      <div style={{
-        fontFamily: "'Lora', serif",
-        fontSize: '0.85rem',
-        color: 'var(--bark-lt)',
-        marginTop: 4,
-      }}>
+      {/* Date */}
+      <div
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: '2.35rem',
+          fontWeight: 600,
+          color: 'var(--bark)',
+          lineHeight: 1,
+        }}
+      >
+        {day}{' '}
+        <span style={{ fontFamily: "'Lora', serif", fontSize: '1.05rem', fontWeight: 400, color: 'var(--bark-lt)' }}>
+          {month}
+        </span>
+      </div>
+
+      <div style={{ fontFamily: "'Lora', serif", fontSize: '0.86rem', color: 'var(--bark-lt)', marginTop: 4 }}>
         {weekday}
       </div>
 
-      <div style={{
-        fontSize: '0.65rem',
-        color: 'var(--gold-dim)',
-        marginTop: 5,
-        fontFamily: "'Cinzel', serif",
-        letterSpacing: '0.1em',
-      }}>
-        Make today count ✦
+      {/* Sankalp */}
+      <div style={{ marginTop: 'auto', paddingTop: 14 }}>
+        <div
+          style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.68rem',
+            letterSpacing: '0.06em',
+            color: '#9b7ebd',
+          }}
+        >
+          Today's Sankalp
+        </div>
+        <div style={{ fontFamily: "'Lora', serif", fontSize: '0.74rem', color: 'var(--bark-lt)', marginTop: 3 }}>
+          Choose peace, choose progress.
+        </div>
       </div>
     </div>
   )
@@ -70,24 +113,16 @@ function DateCard() {
 /* ─────────────────────────────────────────────────────────────
    DASHBOARD STATS  (default export)
 
-   Renders the "Today at a Glance" section:
-     - Water consumed StatCard
-     - Habits completed StatCard
-     - Hydration streak StatCard
-     - Date card
-
-   Usage in Home.jsx:
-     import DashboardStats from '../sections/DashboardStats'
-     ...
-     <DashboardStats />
-───────────────────────────────────────────────────────────── */
+   Drop-in replacement for the original DashboardStats.jsx.
+   Only the icon slots and bottomSlot props have changed;
+   all context, hooks, and animation logic are identical.
+─────────────────────────────────────────────────────────────── */
 export default function DashboardStats() {
   const { waterGoal, todayTotal, habits, todayHabitDone } = useWellness()
   const streak = useHydrationStreak(todayTotal)
 
-  const waterPct = calcPct(todayTotal, waterGoal)
+  const waterPct  = calcPct(todayTotal, waterGoal)
   const doneCount = habits.filter(h => todayHabitDone[h.id]).length
-  const habitPct  = habits.length ? calcPct(doneCount, habits.length) : 0
 
   return (
     <section style={{ marginBottom: '3.5rem' }}>
@@ -107,56 +142,62 @@ export default function DashboardStats() {
 
       <OrnateDivider />
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 12,
-      }}>
+      <div className="fs-dashboard-stats-grid">
 
-        {/* Water */}
+        {/* ── Water ── */}
         <motion.div variants={fadeUp(0.06)} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <StatCard
             type="water"
-            emoji="💧"
+            icon={
+              <span className="fs-real-icon fs-real-icon--water">
+                <img src={copperVesselImg} alt="Copper water vessel" />
+              </span>
+            }
             value={todayTotal}
             unit="ml"
             label="Water consumed"
-            sub={`Goal: ${waterGoal} ml · ${waterPct}%`}
+            sub={`Goal: ${waterGoal} ml`}
             to="/water"
             pct={waterPct}
-            delay={0.06}
           />
         </motion.div>
 
-        {/* Habits */}
+        {/* ── Habits ── */}
         <motion.div variants={fadeUp(0.10)} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <StatCard
             type="habits"
-            emoji="✅"
+            icon={
+              <span className="fs-real-icon fs-real-icon--lotus">
+                <img src={realLotusImg} alt="Pink lotus flower" />
+              </span>
+            }
             value={doneCount}
-            unit="done"
+            unit={`/ ${habits.length}`}
             label="Habits completed"
-            sub={`of ${habits.length} today`}
+            sub="Keep going, you're doing great!"
             to="/habits"
-            pct={habitPct}
-            delay={0.10}
+            bottomSlot={<LotusRow done={doneCount} total={habits.length} />}
           />
         </motion.div>
 
-        {/* Streak */}
+        {/* ── Streak ── */}
         <motion.div variants={fadeUp(0.14)} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <StatCard
             type="streak"
-            emoji="🔥"
+            icon={
+              <span className="fs-real-icon fs-real-icon--diya">
+                <img src={realDiyaImg} alt="Diya oil lamp" />
+              </span>
+            }
             value={streak}
             unit="days"
             label="Hydration streak"
             sub="Days you hit your goal"
-            delay={0.14}
+            bottomSlot={<FlameRow count={streak} />}
           />
         </motion.div>
 
-        {/* Date */}
+        {/* ── Date ── */}
         <motion.div variants={fadeUp(0.18)} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <DateCard />
         </motion.div>

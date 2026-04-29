@@ -1,62 +1,155 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
 
-const palette = {
-  water:  { bar: 'linear-gradient(90deg, var(--royal), var(--royal-lt))',  top: 'linear-gradient(90deg, var(--royal), var(--royal-lt))' },
-  habits: { bar: 'linear-gradient(90deg, var(--emerald), var(--emerald-lt))', top: 'linear-gradient(90deg, var(--emerald), var(--emerald-lt))' },
-  streak: { bar: 'linear-gradient(90deg, var(--saffron), var(--gold))',    top: 'linear-gradient(90deg, var(--saffron), var(--gold))' },
-  mood:   { bar: 'linear-gradient(90deg, #B08BBF, #D4AADF)',               top: 'linear-gradient(90deg, #B08BBF, #D4AADF)' },
-}
+/* ─────────────────────────────────────────────────────────────
+   StatCard.jsx
+   A single dashboard stat tile.
 
-export default function StatCard({ type = 'water', emoji, value, unit, label, sub, to, pct, delay = 0 }) {
-  const pal = palette[type] || palette.water
+   Props
+   ─────
+   icon      ReactNode   Custom SVG icon to render at the top
+                         (replaces the old emoji prop for water /
+                          streak / habits cards). Falls back to
+                          the `emoji` prop if provided.
+   emoji     string      Fallback plain emoji (kept for compat)
+   type      string      'water' | 'habits' | 'streak' | other
+   value     number
+   unit      string
+   label     string
+   sub       string      small subtitle line
+   to        string      react-router path → renders "View →" link
+   pct       number      0-100, renders progress bar when provided
+   bottomSlot ReactNode  anything to render pinned at the bottom
+                         (e.g. lotus row, flame row)
+   delay     number      framer-motion stagger delay (unused here,
+                         parent handles motion wrapper)
+─────────────────────────────────────────────────────────────── */
+export default function StatCard({
+  icon,
+  emoji,
+  type,
+  value,
+  unit,
+  label,
+  sub,
+  to,
+  pct,
+  bottomSlot,
+}) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      className="card card-hover relative overflow-hidden p-6"
-    >
-      {/* Top accent bar */}
-      <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: pal.top }} />
+    <div className="fs-dash-card" style={{ display: 'flex', flexDirection: 'column' }}>
 
+      {/* "View →" link – top-right */}
       {to && (
-        <Link to={to} style={{
-          position: 'absolute', top: '14px', right: '16px',
-          fontSize: '11px', fontWeight: 700,
-          color: 'var(--saffron)', textDecoration: 'none',
-          fontFamily: 'Lexend', opacity: 0.8,
-        }}>
+        <Link
+          to={to}
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 18,
+            fontFamily: "'Lora', serif",
+            fontSize: '0.78rem',
+            color: type === 'streak' ? 'var(--gold)' : 'var(--sage)',
+            textDecoration: 'none',
+          }}
+        >
           View →
         </Link>
       )}
 
-      <span style={{ fontSize: '28px', marginBottom: '10px', display: 'block' }}>{emoji}</span>
-
-      <div style={{
-        fontFamily: 'Playfair Display, serif',
-        fontSize: '40px',
-        fontWeight: 400,
-        lineHeight: 1,
-        color: 'var(--ink)',
-      }}>
-        {value}
-        <span style={{ fontSize: '14px', fontWeight: 300, color: 'var(--text-muted)', marginLeft: '4px', fontFamily: 'Lexend' }}>{unit}</span>
+      {/* Icon area */}
+      <div style={{ marginBottom: 4, flexShrink: 0 }}>
+        {icon ?? (emoji && <span style={{ fontSize: '2rem' }}>{emoji}</span>)}
       </div>
 
-      <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px', fontWeight: 500, fontFamily: 'Lexend' }}>{label}</div>
-      {sub && <div style={{ fontSize: '11px', color: 'var(--text-faint)', marginTop: '2px', fontFamily: 'Lexend' }}>{sub}</div>}
+      {/* Primary value */}
+      <div
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: '2.15rem',
+          fontWeight: 600,
+          color: 'var(--bark)',
+          lineHeight: 1,
+        }}
+      >
+        {value}{' '}
+        <span
+          style={{
+            fontFamily: "'Lora', serif",
+            fontSize: '1rem',
+            fontWeight: 400,
+            color: 'var(--bark-lt)',
+          }}
+        >
+          {unit}
+        </span>
+      </div>
 
-      {pct !== undefined && (
-        <div style={{ marginTop: '12px', height: '5px', borderRadius: '99px', background: 'var(--ivory-darker)', overflow: 'hidden' }}>
-          <motion.div
-            style={{ height: '100%', borderRadius: '99px', background: pal.bar }}
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.9, delay: delay + 0.2, ease: 'easeOut' }}
-          />
+      {/* Label */}
+      <div
+        style={{
+          fontFamily: "'Lora', serif",
+          fontSize: '0.9rem',
+          color: 'var(--bark-lt)',
+          marginTop: 3,
+        }}
+      >
+        {label}
+      </div>
+
+      {/* Sub text */}
+      {sub && (
+        <div
+          style={{
+            fontFamily: "'Lora', serif",
+            fontSize: '0.76rem',
+            color: 'var(--bark-xlt)',
+            marginTop: 5,
+          }}
+        >
+          {sub}
         </div>
       )}
-    </motion.div>
+
+      {/* Progress bar (water card) */}
+      {pct !== undefined && (
+        <div style={{ marginTop: 'auto', paddingTop: 12 }}>
+          <div
+            style={{
+              height: 6,
+              background: 'var(--cream-dark, #e8dcc8)',
+              borderRadius: 4,
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                height: '100%',
+                width: `${pct}%`,
+                background: '#5b9bd5',
+                borderRadius: 4,
+              }}
+            />
+          </div>
+          <div
+            style={{
+              fontSize: '0.6rem',
+              color: '#5b9bd5',
+              textAlign: 'right',
+              marginTop: 2,
+              fontFamily: "'Lora', serif",
+            }}
+          >
+            {pct}%
+          </div>
+        </div>
+      )}
+
+      {/* Bottom slot – lotus row, flame row, etc. */}
+      {bottomSlot && (
+        <div style={{ marginTop: pct !== undefined ? 6 : 'auto', paddingTop: 8 }}>
+          {bottomSlot}
+        </div>
+      )}
+    </div>
   )
 }
