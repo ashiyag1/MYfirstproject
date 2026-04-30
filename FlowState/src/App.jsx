@@ -10,6 +10,8 @@ import Habits  from './pages/Habits'
 import Journal from './pages/Journal'
 import Quotes  from './pages/Quotes'
 import Login   from './pages/Login'
+import { NotificationProvider, ScheduledReminders, reminders } from './components/notifications';
+
 
 function ScrollReset() {
   const { pathname } = useLocation()
@@ -18,6 +20,13 @@ function ScrollReset() {
 }
 
 export default function App() {
+    // ← add this block
+  useEffect(() => {
+    reminders.journal();
+    setTimeout(() => reminders.hydrate(), 1000);
+    setTimeout(() => reminders.habit(),   2000);
+  }, []);
+
   return (
     <ThemeProvider>
       <ToastProvider>
@@ -34,6 +43,8 @@ export default function App() {
               <Route path="/login"   element={<Login />} />
               <Route path="*"        element={<Home />} />
             </Routes>
+            <NotificationProvider />
+            <ScheduledReminders />
           </BrowserRouter>
         </WellnessProvider>
       </ToastProvider>

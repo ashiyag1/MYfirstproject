@@ -7,13 +7,12 @@ import LotusRow        from '../components/LotusRow'
 import FlameRow        from '../components/FlameRow'
 import SectionHeading  from '../components/SectionHeading'
 import OrnateDivider   from '../components/OrnateDivider'
-
-import copperVesselImg from '../assets/dashboard/copper-vessel.png'
 import realLotusImg    from '../assets/dashboard/real-lotus.png'
 import realDiyaImg     from '../assets/dashboard/real-diya.png'
 import realCalendarImg from '../assets/dashboard/real-calendar.png'
 
 import { useHydrationStreak } from '../hooks/useHydrationStreak'
+import TambaaVessel from '../icons/TambaaVessel'
 
 /* ─────────────────────────────────────────────────────────────
    ANIMATION VARIANT  (same as before)
@@ -145,22 +144,11 @@ export default function DashboardStats() {
       <div className="fs-dashboard-stats-grid">
 
         {/* ── Water ── */}
-        <motion.div variants={fadeUp(0.06)} initial="hidden" whileInView="show" viewport={{ once: true }}>
-          <StatCard
-            type="water"
-            icon={
-              <span className="fs-real-icon fs-real-icon--water">
-                <img src={copperVesselImg} alt="Copper water vessel" />
-              </span>
-            }
-            value={todayTotal}
-            unit="ml"
-            label="Water consumed"
-            sub={`Goal: ${waterGoal} ml`}
-            to="/water"
-            pct={waterPct}
-          />
-        </motion.div>
+        <TambaaVessel
+          todayTotal={todayTotal}
+          waterGoal={waterGoal}
+          waterPct={waterPct}
+        />
 
         {/* ── Habits ── */}
         <motion.div variants={fadeUp(0.10)} initial="hidden" whileInView="show" viewport={{ once: true }}>

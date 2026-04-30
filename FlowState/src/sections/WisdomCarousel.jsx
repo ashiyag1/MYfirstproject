@@ -207,7 +207,7 @@ function WisdomStyles() {
     <style>{`
       .fs-wisdom-panorama {
         position: relative;
-        min-height: 286px;
+        min-height: 360px;
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid rgba(182, 139, 76, 0.34);
@@ -252,12 +252,12 @@ function WisdomStyles() {
       .fs-wisdom-layout {
         position: relative;
         z-index: 3;
-        min-height: 286px;
+        min-height: 360px;
         display: grid;
-        grid-template-columns: minmax(310px, 0.92fr) minmax(80px, 0.35fr) minmax(390px, 1.06fr);
+        grid-template-columns: minmax(280px, 1fr) minmax(24px, 0.08fr) minmax(360px, 1fr);
         align-items: center;
         gap: 20px;
-        padding: 16px 32px 16px 18px;
+        padding: 24px 32px 80px 18px; 
       }
 
       .fs-wisdom-scroll {
@@ -388,8 +388,8 @@ function WisdomStyles() {
 
       .fs-wisdom-glass {
         justify-self: end;
-        width: min(100%, 470px);
-        min-height: 210px;
+        width: min(100%, 440px);
+        min-height: auto;
         position: relative;
         overflow: hidden;
         border-radius: 24px;
@@ -399,6 +399,7 @@ function WisdomStyles() {
         background: linear-gradient(135deg, rgba(66, 42, 19, 0.55), rgba(32, 22, 13, 0.38));
         box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 18px 40px rgba(22, 12, 6, 0.26);
         backdrop-filter: blur(9px);
+        margin-bottom: 0;
       }
 
       .fs-wisdom-glass::before {
@@ -482,8 +483,8 @@ function WisdomStyles() {
       .fs-wisdom-controls {
         position: absolute;
         z-index: 5;
-        right: 42px;
-        bottom: 22px;
+        right: 38px;
+        bottom: 28px;
         display: flex;
         align-items: center;
         gap: 10px;
