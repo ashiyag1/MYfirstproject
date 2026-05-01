@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Sun, Moon, LogIn } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { motion, AnimatePresence } from 'framer-motion'
+import NotificationBell from './NotificationBell'
 
 /* ── Nav items: English label (big) + Sanskrit sub (small) ── */
 const NAV = [
@@ -255,6 +256,9 @@ export default function Navbar() {
                 </AnimatePresence>
               </motion.button>
 
+              {/* Notification bell */}
+              <NotificationBell />
+
               {/* Divider dot */}
               <Dot/>
 
@@ -299,6 +303,7 @@ export default function Navbar() {
               }}>FlowState</span>
             </NavLink>
             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <NotificationBell />
               <motion.button type="button" whileTap={{ scale:0.88 }} onClick={toggle}
                 style={{
                   width:32, height:32, borderRadius:'50%',
